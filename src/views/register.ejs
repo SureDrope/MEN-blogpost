@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('layouts/header'); -%>
+	<body>
+		<!-- Navigation-->
+		<%- include('layouts/navbar'); -%>
+		<!-- Page Header-->
+		<header
+			class="masthead"
+			style="background-image: url('/assets/img/contact-bg.jpg')"
+		>
+			<div class="container position-relative px-4 px-lg-5">
+				<div class="row gx-4 gx-lg-5 justify-content-center">
+					<div class="col-md-10 col-lg-8 col-xl-7">
+						<div class="page-heading">
+							<h1>Register a new account</h1>
+							<span class="subheading"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- Main Content-->
+		<main class="mb-4">
+			<div class="container px-4 px-lg-5">
+				<div class="row gx-4 gx-lg-5 justify-content-center">
+					<div class="col-md-10 col-lg-8 col-xl-7">
+						<div class="my-5">
+							<% if (errors && errors.length > 0) { %>
+							<ul class="list-group">
+								<% for( let i = 0; i < errors.length; i++ ) { %>
+								<li class="list-group list-group-item-danger">
+									<%= errors[i] %>
+								</li>
+								<% } %>
+							</ul>
+							<% } %>
+							<form
+								id="contactForm"
+								action="/users/register"
+								method="post"
+							>
+								<div class="form-floating">
+									<label for="username">User Name</label>
+									<input
+										class="form-control"
+										id="username"
+										name="username"
+										type="text"
+										placeholder="User Name"
+										value="<%= username %>"
+									/>
+								</div>
+								<div class="form-floating">
+									<label for="password">Password</label>
+									<input
+										class="form-control"
+										id="password"
+										name="password"
+										type="password"
+										placeholder="Password"
+									/>
+									<!-- <button> -->
+									<svg
+										style="
+											width: 24px;
+											height: 24px;
+											cursor: pointer;
+										"
+										viewBox="0 0 24 24"
+										id="toggle-password"
+									>
+										<path
+											fill="currentColor"
+											d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z"
+										/>
+									</svg>
+									<!-- </button> -->
+								</div>
+								<br />
+								<!-- Submit Button-->
+								<button
+									class="btn btn-primary text-uppercase"
+									id="submitButton"
+									type="submit"
+								>
+									Register
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<!-- Footer-->
+		<%- include('layouts/footer'); -%> <%- include('layouts/scripts'); -%>
+	</body>
+</html>
