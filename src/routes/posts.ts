@@ -4,8 +4,8 @@ import multer from 'multer'
 import { validatePost } from '../middlewares/validatePost'
 import { getPostController } from '../controllers/getPost'
 import { storePostController } from '../controllers/storePost'
-import { newPostController } from '../controllers/newPost'
-import { authMiddleware } from '../middlewares/auth'
+import { newPostController } from '../controllers/newPostPage'
+import { isAuthenticated } from '../middlewares/isAuthenticated'
 
 const storage = multer.diskStorage({
 	destination: (req, res, cb) => {
@@ -18,8 +18,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 const router = express.Router()
-router.use('/store', authMiddleware, upload.single('image'), validatePost)
-router.use('/new', authMiddleware)
+router.use('/store', isAuthenticated, upload.single('image'), validatePost)
+router.use('/new', isAuthenticated)
 
 /*
  * Because filename is posts, we can ommit /posts/ in the link,

@@ -13,9 +13,10 @@ export const loginUserController = (req: Request, res: Response) => {
 			bcrypt.compare(password, user.password, (error, same) => {
 				if (same) {
 					// store user session
-					console.log(`Success login of user ${user.username}`)
 					// console.log(user._id)
 					req.session.userId = `${user._id}`
+					console.log(req.session)
+					console.log(`Success login of user ${user.username}`)
 					res.redirect('/')
 				} else {
 					console.log(`Wrong password for user ${user.username}`)

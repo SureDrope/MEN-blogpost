@@ -7,13 +7,14 @@ import connectRedis from 'connect-redis'
 import path from 'path'
 import postsRouter from './routes/posts'
 import compression from 'compression'
+import passport from 'passport'
 
 import { homeController } from './controllers/homePage'
-import { newUserController } from './controllers/newUser'
+import { newUserController } from './controllers/newUserPage'
 import { storeUserController } from './controllers/storeUser'
-import { loginController } from './controllers/login'
+import { loginController } from './controllers/loginPage'
 import { loginUserController } from './controllers/loginUser'
-import { logoutController } from './controllers/logout'
+import { logoutController } from './controllers/logoutUser'
 
 import { logger } from './middlewares/logger'
 import { errorCatch } from './middlewares/errorCatch'
@@ -54,21 +55,26 @@ app.use(
 		secret: env.COOKIE_SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
-		store: new RedisStore({ client: redisClient })
+		store: new RedisStore({ client: redisClient }),
+		cookie: {
+			secure: 'auto' // if https then true, else false
+		}
 	})
 )
 app.use(flash())
-app.use((req, res, next) => {
-	// if (req.path.slice(-1) === '/' && req.path.length > 1) {
-	console.log(req.path)
-	if (req.path.endsWith('/') && req.path.length > 1) {
-		const query = req.url.slice(req.path.length)
-		console.log(query)
-		res.redirect(301, req.path.slice(0, -1) + query)
-	} else {
-		next()
-	}
-})
+// app.use((req, res, next) => {
+// 	console.log(req.path)
+// 	// console.log('#######')
+// 	console.log(req.path.endsWith('/'))
+// 	if (req.path.endsWith('/') && req.path.length > 1) {
+// 		console.log('test')
+// 		const query = req.url.slice(req.path.length)
+// 		console.log(query + '1111')
+// 		res.redirect(301, req.path.slice(0, -1) + query)
+// 	} else {
+// 		next()
+// 	}
+// })
 app.use(logger)
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
