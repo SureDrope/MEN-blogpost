@@ -8,6 +8,7 @@ import path from 'path'
 import postsRouter from './routes/posts'
 import compression from 'compression'
 import passport from 'passport'
+import { initPassport } from './config/passport-config'
 
 import { homeController } from './controllers/homePage'
 import { newUserController } from './controllers/newUserPage'
@@ -22,6 +23,7 @@ import { redirAuthedUser } from './middlewares/redirAuthedUser'
 
 import session from 'express-session'
 import flash from 'connect-flash'
+import { authUser } from './controllers/authUser'
 
 const env = cleanEnv(process.env, {
 	COOKIE_SESSION_SECRET: str(),
@@ -43,6 +45,8 @@ redisClient.on('error', console.error)
 
 const RedisStore = connectRedis(session)
 
+initPassport(passport)
+
 const app = express()
 
 app.disable('x-powered-by')
@@ -50,6 +54,11 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
 app.use(compression())
+
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 app.use(
 	session({
 		secret: env.COOKIE_SESSION_SECRET,
@@ -62,6 +71,8 @@ app.use(
 	})
 )
 app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
 // app.use((req, res, next) => {
 // 	console.log(req.path)
 // 	// console.log('#######')
@@ -76,9 +87,6 @@ app.use(flash())
 // 	}
 // })
 app.use(logger)
-app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 app.use((req, res, next) => {
 	if (!req.session) {
 		return next(new Error('oh no'))
@@ -105,7 +113,8 @@ app.get('/auth/register', redirAuthedUser, newUserController)
 app.post('/users/register', redirAuthedUser, storeUserController)
 
 app.get('/auth/login', redirAuthedUser, loginController)
-app.post('/users/login', redirAuthedUser, loginUserController)
+// app.post('/users/login', redirAuthedUser, loginUserController)
+app.post('/users/login', redirAuthedUser, authUser)
 
 app.get('/auth/logout', logoutController)
 // app.get('/about', (req, res) => {
