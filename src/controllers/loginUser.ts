@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import bcrypt from 'bcrypt'
-import { User, IUser } from '../models/User'
+import { User } from '../models/User'
 
 export const loginUserController = async (
 	req: Request,
