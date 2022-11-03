@@ -1,31 +1,30 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import { User, IUser } from '../models/User'
 
-// interface IUser {
-// 	_Id: string
-// }
-
-export const loginUserController = (req: Request, res: Response) => {
+export const loginUserController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { username, password } = req.body
-	User.findOne({ username }, (error: Error, user: IUser) => {
-		if (user) {
-			bcrypt.compare(password, user.password, (error, same) => {
-				if (same) {
-					// store user session
-					// console.log(user._id)
-					req.session.userId = `${user._id}`
-					console.log(req.session)
-					console.log(`Success login of user ${user.username}`)
-					res.redirect('/')
-				} else {
-					console.log(`Wrong password for user ${user.username}`)
-					res.redirect('/auth/login')
-				}
-			})
-		} else {
-			console.log('User not found')
-			res.redirect('/auth/login')
+	try {
+		const user = await User.findOne({ username })
+		if (!user) {
+			console.log('No user with such username')
+			return res.redirect('/auth/login')
 		}
-	})
+		if (await user.comparePasswords(password)) {
+			// store user's id in a session
+			req.session.userId = `${user._id}`
+			console.log(req.session)
+			console.log(`Success login of user ${user.username}`)
+			return res.redirect('/')
+		} else {
+			console.log(`Incorrect password for user ${username}`)
+			return res.redirect('/auth/login')
+		}
+	} catch (error) {
+		if (error instanceof Error) next(error)
+	}
 }

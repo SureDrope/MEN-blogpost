@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Document } from 'mongoose'
 import bcrypt from 'bcrypt'
 import uniqueValidator from 'mongoose-unique-validator'
 
@@ -6,6 +6,7 @@ export interface IUser {
 	_id: Schema.Types.ObjectId
 	username: string
 	password: string
+	comparePasswords(password: string): Promise<boolean>
 }
 
 const UserSchema = new Schema<IUser>({
@@ -24,6 +25,12 @@ UserSchema.pre('save', function (next) {
 	})
 })
 
+UserSchema.methods.comparePasswords = async function (
+	password: string
+): Promise<boolean> {
+	const match = await bcrypt.compare(password, this.password)
+	return match
+}
 UserSchema.plugin(uniqueValidator)
 
 export const User = model<IUser>('User', UserSchema)

@@ -50,6 +50,11 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
 app.use(compression())
+
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 app.use(
 	session({
 		secret: env.COOKIE_SESSION_SECRET,
@@ -62,6 +67,8 @@ app.use(
 	})
 )
 app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
 // app.use((req, res, next) => {
 // 	console.log(req.path)
 // 	// console.log('#######')
@@ -76,9 +83,6 @@ app.use(flash())
 // 	}
 // })
 app.use(logger)
-app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 app.use((req, res, next) => {
 	if (!req.session) {
 		return next(new Error('oh no'))
