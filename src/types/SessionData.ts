@@ -1,6 +1,6 @@
 declare module 'express-session' {
 	interface SessionData {
-		userId: string
+		passport: { user: string }
 		// validationErrors: string[]
 	}
 }

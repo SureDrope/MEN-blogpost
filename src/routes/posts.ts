@@ -5,7 +5,8 @@ import { validatePost } from '../middlewares/validatePost'
 import { getPostController } from '../controllers/getPost'
 import { storePostController } from '../controllers/storePost'
 import { newPostController } from '../controllers/newPostPage'
-import { isAuthenticated } from '../middlewares/isAuthenticated'
+// import { isAuthenticated } from '../middlewares/isAuthenticated'
+import { isAuthenticated } from '../config/passport'
 
 const storage = multer.diskStorage({
 	destination: (req, res, cb) => {
