@@ -8,7 +8,11 @@ import path from 'path'
 import postsRouter from './routes/posts'
 import compression from 'compression'
 import passport from 'passport'
-import { initPassport } from './config/passport-config'
+import {
+	initPassport,
+	isAuthenticated,
+	redirAuthenticatedUser
+} from './config/passport'
 
 import { homeController } from './controllers/homePage'
 import { newUserController } from './controllers/newUserPage'
@@ -45,8 +49,6 @@ redisClient.on('error', console.error)
 
 const RedisStore = connectRedis(session)
 
-initPassport(passport)
-
 const app = express()
 
 app.disable('x-powered-by')
@@ -70,6 +72,7 @@ app.use(
 		}
 	})
 )
+initPassport()
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
@@ -94,7 +97,7 @@ app.use((req, res, next) => {
 	next()
 })
 app.use((req, res, next) => {
-	res.locals.loggedIn = req.session.userId
+	res.locals.loggedIn = req.session.passport?.user
 	next()
 })
 //
@@ -114,19 +117,17 @@ app.post('/users/register', redirAuthedUser, storeUserController)
 
 app.get('/auth/login', redirAuthedUser, loginController)
 // app.post('/users/login', redirAuthedUser, loginUserController)
-app.post('/users/login', redirAuthedUser, authUser)
+app.post(
+	'/users/login',
+	redirAuthedUser,
+	passport.authenticate('local', {
+		successRedirect: '/',
+		failureRedirect: '/auth/login',
+		failureFlash: true
+	})
+)
 
 app.get('/auth/logout', logoutController)
-// app.get('/about', (req, res) => {
-// 	// called when request to /about comes in
-// 	// res.sendFile(path.resolve(__dirname,'pages/about.html'))
-// 	res.render('about')
-// })
-// app.get('/contact', (req, res) => {
-// 	//called when request to /contact comes
-// 	// res.sendFile(path.resolve(__dirname,'pages/contact.html'))
-// 	res.render('contact')
-// })
 
 app.post('/', (req, res) => {
 	res.send(req.body)
